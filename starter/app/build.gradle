@@ -13,9 +13,17 @@ android {
         applicationId "com.udacity.project4"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
+        multiDexEnabled = true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Load credentials.
+        def properties = new Properties()
+        file("../local.properties").withInputStream { properties.load(it) }
+
+        // Share the key with your `AndroidManifest.xml`
+        manifestPlaceholders = [ googleMapsApiKey:"${properties.getProperty('google.maps_api_key')}"]
     }
     buildTypes {
         release {
@@ -47,12 +55,16 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
     implementation "androidx.annotation:annotation:$androidXAnnotations"
 
+    implementation "androidx.multidex:multidex:2.0.1"
+
     implementation "androidx.cardview:cardview:$cardVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintVersion"
 
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
 
     // Architecture Components
     //Navigation dependencies

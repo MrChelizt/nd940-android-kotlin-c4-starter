@@ -33,6 +33,13 @@
     <string name="welcome">Welcome</string>
     <string name="err_enter_title">Please enter title</string>
     <string name="err_select_location">Please select location</string>
+    <string name="signup">Sign Up</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_password_again">Enter Password Again</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="sign_in_with_email">Sign in with email</string>
+
+
 
     <!-- Error strings -->
     <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
@@ -40,4 +47,5 @@
     <string name="geofence_too_many_geofences">Your app has registered too many geofences.</string>
     <string name="geofence_too_many_pending_intents">You have provided too many PendingIntents to the addGeofences() call.</string>
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
+    <string name="login_unsuccessful_msg">Login Unsuccessful</string>
 </resources>
