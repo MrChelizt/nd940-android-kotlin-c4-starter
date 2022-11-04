@@ -10,24 +10,94 @@
             type="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
         tools:context=".locationreminders.ReminderDescriptionActivity">
-        <!--TODO: add the design of the reminder details-->
 
-        <TextView
+        <GridLayout
+            android:id="@+id/gridLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Reminder Details"
-            android:textSize="@dimen/text_size_large"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:alignmentMode="alignBounds"
+            android:columnCount="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@string/reminder_title"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@{reminderDataItem.title}"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@string/reminder_desc"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@{reminderDataItem.description}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@string/reminder_location"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:text="@{reminderDataItem.location}"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp" />
+
+        </GridLayout>
+
+        <Button
+            android:id="@+id/okButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:background="@color/colorAccent"
+            android:elevation="2dp"
+            android:text="@string/ok"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/gridLayout"
+            app:layout_constraintVertical_bias="1.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
 </layout>
