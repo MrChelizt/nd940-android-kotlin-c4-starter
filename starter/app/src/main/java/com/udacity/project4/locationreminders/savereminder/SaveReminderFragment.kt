@@ -153,7 +153,7 @@ class SaveReminderFragment : BaseFragment() {
 
     companion object {
 
-        private const val ACTION_GEOFENCE_EVENT =
+        internal const val ACTION_GEOFENCE_EVENT =
             "LocationReminder.action.ACTION_GEOFENCE_EVENT"
         private const val GEOFENCE_RADIUS_IN_METERS = 100f
 
