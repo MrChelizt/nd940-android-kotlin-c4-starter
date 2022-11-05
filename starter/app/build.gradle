@@ -18,12 +18,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // Load credentials.
-        def properties = new Properties()
-        file("../local.properties").withInputStream { properties.load(it) }
-
-        // Share the key with your `AndroidManifest.xml`
-        manifestPlaceholders = [ googleMapsApiKey:"${properties.getProperty('google.maps_api_key')}"]
     }
     buildTypes {
         release {
@@ -39,10 +33,10 @@ android {
         returnDefaultValues = true
     }
 
-    //dataBinding {
-    //    enabled = true
-    //    enabledForTests = true
-    //}
+    dataBinding {
+        enabled = true
+        enabledForTests = true
+    }
     buildFeatures {
         dataBinding true
     }
@@ -70,6 +64,8 @@ dependencies {
     //Navigation dependencies
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
+    testImplementation project(path: ':app')
+    androidTestImplementation project(path: ':app')
     kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
