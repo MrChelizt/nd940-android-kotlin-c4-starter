@@ -98,7 +98,7 @@ class SaveReminderFragment : BaseFragment() {
 
             geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
                 addOnSuccessListener {
-                    _viewModel.saveReminder(reminderData)
+                    _viewModel.validateAndSaveReminder(reminderData)
                 }
                 addOnFailureListener {
                     Snackbar.make(
