@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
@@ -62,8 +61,7 @@ fun Fragment.requestMapLocationPermissions() {
 
 fun Fragment.requestBackgroundPermissions() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
+        requestPermissions(
             arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
             REQUEST_BACKGROUND_PERMISSION_RESULT_CODE
         )

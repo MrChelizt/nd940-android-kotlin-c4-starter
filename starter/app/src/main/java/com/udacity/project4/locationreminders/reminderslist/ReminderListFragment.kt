@@ -43,11 +43,7 @@ class ReminderListFragment : BaseFragment() {
         binding.lifecycleOwner = this
         setupRecyclerView()
         binding.addReminderFAB.setOnClickListener {
-            if (hasMapLocationPermissions()) {
-                navigateToAddReminder()
-            } else {
-                requestMapLocationPermissions()
-            }
+            navigateToAddReminder()
         }
     }
 
@@ -55,24 +51,6 @@ class ReminderListFragment : BaseFragment() {
         super.onResume()
         //load the reminders list on the ui
         _viewModel.loadReminders()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (!isBackgroundPermissionResult(requestCode)) {
-            if (!areLocationPermissionsGranted(grantResults)) {
-                Snackbar.make(
-                    requireView(),
-                    R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
-                )
-                    .show()
-            } else {
-                navigateToAddReminder()
-            }
-        }
     }
 
     private fun navigateToAddReminder() {

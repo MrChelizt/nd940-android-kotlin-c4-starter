@@ -76,7 +76,13 @@ class SaveReminderViewModelTest {
     fun validateAndSaveReminder_successfullySaveReminder() = mainCoroutineRule.runBlockingTest {
         val data = ReminderDataItem("Title", "Description", "Location", 1.1, 2.2)
 
+        mainCoroutineRule.pauseDispatcher()
+
         saveReminderViewModel.validateAndSaveReminder(data)
+
+        assertThat(saveReminderViewModel.showLoading.value, `is`(true))
+
+        mainCoroutineRule.resumeDispatcher()
 
         assertReminderIsSaved(data)
         assertThat(saveReminderViewModel.showLoading.value, `is`(false))
@@ -100,7 +106,13 @@ class SaveReminderViewModelTest {
     fun saveReminder_successfullySaveReminder() = mainCoroutineRule.runBlockingTest {
         val data = ReminderDataItem("Title", "Description", "Location", 1.1, 2.2)
 
+        mainCoroutineRule.pauseDispatcher()
+
         saveReminderViewModel.saveReminder(data)
+
+        assertThat(saveReminderViewModel.showLoading.value, `is`(true))
+
+        mainCoroutineRule.resumeDispatcher()
 
         assertReminderIsSaved(data)
         assertThat(saveReminderViewModel.showLoading.value, `is`(false))

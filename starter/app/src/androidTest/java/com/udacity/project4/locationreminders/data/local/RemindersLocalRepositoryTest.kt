@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
@@ -121,6 +122,29 @@ class RemindersLocalRepositoryTest {
         assertThat(reminder, `is`(CoreMatchers.notNullValue()))
         assertReminder(reminder, data2)
     }
+
+    @Test
+    fun getReminder_reminderNotFound() = runBlocking {
+        //GIVEN
+        val data1 = ReminderDTO("Reminder1", "Desc1", "Loc1", 1.0, 1.1, "111")
+        database.reminderDao().saveReminder(data1)
+
+        val data2 = ReminderDTO("Reminder2", "Desc2", "Loc2", 2.0, 2.2, "222")
+        database.reminderDao().saveReminder(data2)
+
+        val notSavedId = "333"
+
+        //WHEN
+        val result = localRepository.getReminder(notSavedId)
+
+        assertThat(result is Result.Error, `is`(true))
+        result as Result.Error
+
+        //THEN
+        assertThat( result.message, `is`("Reminder not found!"))
+        assertThat(result.statusCode,  `is`(nullValue()))
+    }
+
 
     @Test
     fun deleteAllReminders() = runBlocking {

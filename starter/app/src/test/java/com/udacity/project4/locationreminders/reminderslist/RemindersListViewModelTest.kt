@@ -27,7 +27,7 @@ class RemindersListViewModelTest {
     private lateinit var dataSource: FakeDataSource
 
     @get:Rule
-    var mainCoRoutineRule = MainCoroutineRule()
+    var mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -57,30 +57,39 @@ class RemindersListViewModelTest {
             ReminderDataItem("Reminder2", "Desc2", "Loc2", 2.0, 2.2, "222"),
             ReminderDataItem("Reminder3", "Desc3", "Loc3", 3.0, 3.3, "333")
         )
+
+        mainCoroutineRule.pauseDispatcher()
+
         remindersListViewModel.loadReminders()
 
-        val remindersList: List<ReminderDataItem>? = remindersListViewModel.remindersList.value
-        val showSnackbar: String? = remindersListViewModel.showSnackBar.value
-        val showNoData: Boolean? = remindersListViewModel.showNoData.value
+        assertThat(remindersListViewModel.showLoading.value,  `is`(true))
 
-        assertThat(remindersList, `is`(expected))
-        assertThat(showSnackbar,  `is`(nullValue()))
-        assertThat(showNoData,  `is`(false))
+        mainCoroutineRule.resumeDispatcher()
+
+        assertThat(remindersListViewModel.remindersList.value, `is`(expected))
+        assertThat(remindersListViewModel.showSnackBar.value,  `is`(nullValue()))
+        assertThat(remindersListViewModel.showNoData.value,  `is`(false))
+        assertThat(remindersListViewModel.showLoading.value,  `is`(false))
+
     }
 
     @Test
     fun loadReminders_throwTestError() {
         dataSource.setReturnError(true)
 
+        mainCoroutineRule.pauseDispatcher()
+
         remindersListViewModel.loadReminders()
 
-        val remindersList: List<ReminderDataItem>? = remindersListViewModel.remindersList.value
-        val showSnackbar: String? = remindersListViewModel.showSnackBar.value
-        val showNoData: Boolean? = remindersListViewModel.showNoData.value
+        assertThat(remindersListViewModel.showLoading.value,  `is`(true))
 
-        assertThat(remindersList.isNullOrEmpty(), `is`(true))
-        assertThat(showSnackbar,  `is`("Test exception"))
-        assertThat(showNoData,  `is`(true))
+        mainCoroutineRule.resumeDispatcher()
+
+
+        assertThat(remindersListViewModel.remindersList.value.isNullOrEmpty(), `is`(true))
+        assertThat(remindersListViewModel.showSnackBar.value,  `is`("Test exception"))
+        assertThat(remindersListViewModel.showNoData.value,  `is`(true))
+        assertThat(remindersListViewModel.showLoading.value,  `is`(false))
     }
 
 }

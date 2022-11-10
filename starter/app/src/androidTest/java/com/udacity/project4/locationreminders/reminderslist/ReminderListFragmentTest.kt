@@ -1,9 +1,11 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -15,6 +17,8 @@ import com.udacity.project4.ServiceLocator
 import com.udacity.project4.locationreminders.data.FakeAndroidTestDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.local.LocalDB
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.TestUtils.withRecyclerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -24,6 +28,10 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.mockito.Mockito.*
 
 
@@ -34,11 +42,34 @@ import org.mockito.Mockito.*
 class ReminderListFragmentTest {
 
     private lateinit var repository: ReminderDataSource
+    private lateinit var appContext: Application
 
     @Before
     fun initRepository() {
         repository = FakeAndroidTestDataSource()
         ServiceLocator.reminderDataSource = repository
+        stopKoin()
+        appContext = ApplicationProvider.getApplicationContext()
+        val myModule = module {
+            viewModel {
+                RemindersListViewModel(
+                    appContext,
+                    repository
+                )
+            }
+            single {
+                SaveReminderViewModel(
+                    appContext,
+                    repository
+                )
+            }
+            single { FakeAndroidTestDataSource(get()) as ReminderDataSource }
+            single { LocalDB.createRemindersDao(appContext) }
+        }
+        //declare a new koin module
+        startKoin {
+            modules(listOf(myModule))
+        }
     }
 
     @After
