@@ -2,14 +2,14 @@ package com.udacity.project4.locationreminders.savereminder
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.Uri
+import android.content.IntentSender
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
@@ -28,7 +28,7 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var reminderData: ReminderDataItem
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var locationSettingsClient: SettingsClient
 
 
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -47,8 +47,8 @@ class SaveReminderFragment : BaseFragment() {
         setDisplayHomeAsUpEnabled(true)
 
         binding.viewModel = _viewModel
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
+        locationSettingsClient =
+            LocationServices.getSettingsClient(requireActivity())
         geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
         return binding.root
@@ -96,41 +96,49 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     private fun checkLocationServicesAndAddGeofenceRequest() {
-        try {
-            val locationResult = fusedLocationProviderClient.lastLocation
-            locationResult.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    if (task.result != null) {
-                        addGeofenceRequest()
-                    } else {
-                        Snackbar.make(
-                            requireView(),
-                            R.string.location_required_error,
-                            Snackbar.LENGTH_INDEFINITE
-                        ).setAction(R.string.location_settings) {
-                            startActivity(Intent().apply {
-                                action = Settings.ACTION_LOCATION_SOURCE_SETTINGS
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            })
-                        }
-                            .show()
-                    }
-                } else {
-                    Log.d(TAG, "Current location is null")
-                    Log.e(TAG, "Exception: %s", task.exception)
+        val locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        }
+
+        val locationSettingsRequestBuilder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+
+
+        val locationSettingsResponseTask = locationSettingsClient.checkLocationSettings(
+            locationSettingsRequestBuilder.build()
+        )
+
+        locationSettingsResponseTask.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException) {
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    exception.startResolutionForResult(
+                        requireActivity(),
+                        REQUEST_TURN_DEVICE_LOCATION_ON
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                    Log.d(TAG, "Error geting location settings resolution: " + e.message)
                     Snackbar.make(
                         requireView(),
-                        "Cannot get current location", Snackbar.LENGTH_INDEFINITE
+                        e.message.toString(), Snackbar.LENGTH_INDEFINITE
                     ).show()
                 }
+            } else {
+                Snackbar.make(
+                    requireView(),
+                    R.string.location_required_error,
+                    Snackbar.LENGTH_INDEFINITE
+                ).show()
             }
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
-            Snackbar.make(
-                requireView(),
-                e.message.toString(), Snackbar.LENGTH_INDEFINITE
-            ).show()
         }
+
+        locationSettingsResponseTask.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                addGeofenceRequest()
+            }
+        }
+
     }
 
     private fun addGeofenceRequest() {
@@ -215,6 +223,7 @@ class SaveReminderFragment : BaseFragment() {
         internal const val ACTION_GEOFENCE_EVENT =
             "LocationReminder.action.ACTION_GEOFENCE_EVENT"
         private const val GEOFENCE_RADIUS_IN_METERS = 100f
+        private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
 
     }
 }

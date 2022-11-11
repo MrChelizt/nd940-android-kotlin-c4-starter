@@ -20,24 +20,23 @@ class FakeDataSource(var reminders: MutableList<ReminderDTO> = mutableListOf()) 
         if (shouldReturnError) {
             return Error("Test exception")
         }
-        reminders?.let { return Success(ArrayList(it)) }
-        return Success(emptyList())
+        reminders.let { return Success(ArrayList(it)) }
     }
 
     override suspend fun saveReminder(reminder: ReminderDTO) {
-        reminders?.add(reminder)
+        reminders.add(reminder)
     }
 
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
         if (shouldReturnError) {
             return Error("Test exception")
         }
-        val reminder: ReminderDTO? = reminders?.firstOrNull { it.id == id }
+        val reminder: ReminderDTO? = reminders.firstOrNull { it.id == id }
         return if (reminder != null) Success(reminder) else Error("Reminder not found")
     }
 
     override suspend fun deleteAllReminders() {
-        reminders?.clear()
+        reminders.clear()
     }
 
 
