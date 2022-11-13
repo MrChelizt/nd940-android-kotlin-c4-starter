@@ -95,7 +95,7 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
-    private fun checkLocationServicesAndAddGeofenceRequest() {
+    private fun checkLocationServicesAndAddGeofenceRequest(resolve: Boolean = true) {
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         }
@@ -109,26 +109,31 @@ class SaveReminderFragment : BaseFragment() {
         )
 
         locationSettingsResponseTask.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException) {
+            if (exception is ResolvableApiException && resolve) {
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    exception.startResolutionForResult(
-                        requireActivity(),
-                        REQUEST_TURN_DEVICE_LOCATION_ON
+                    startIntentSenderForResult(
+                        exception.resolution.intentSender,
+                        REQUEST_TURN_DEVICE_LOCATION_ON,
+                        null,
+                        0,
+                        0,
+                        0,
+                        null
                     )
                 } catch (e: IntentSender.SendIntentException) {
-                    Log.d(TAG, "Error geting location settings resolution: " + e.message)
+                    Log.d(TAG, "Error getting location settings resolution: " + e.message)
                     Snackbar.make(
                         requireView(),
-                        e.message.toString(), Snackbar.LENGTH_INDEFINITE
+                        e.message.toString(), Snackbar.LENGTH_LONG
                     ).show()
                 }
             } else {
                 Snackbar.make(
                     requireView(),
                     R.string.location_required_error,
-                    Snackbar.LENGTH_INDEFINITE
+                    Snackbar.LENGTH_LONG
                 ).show()
             }
         }
@@ -139,6 +144,13 @@ class SaveReminderFragment : BaseFragment() {
             }
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
+            checkLocationServicesAndAddGeofenceRequest(false)
+        }
     }
 
     private fun addGeofenceRequest() {
@@ -177,7 +189,7 @@ class SaveReminderFragment : BaseFragment() {
             Snackbar.make(
                 requireView(),
                 R.string.permission_denied_explanation,
-                Snackbar.LENGTH_INDEFINITE
+                Snackbar.LENGTH_LONG
             ).setAction(R.string.give_permission) {
                 requestBackgroundPermissions()
             }.show()
@@ -197,7 +209,7 @@ class SaveReminderFragment : BaseFragment() {
             } else {
                 Snackbar.make(
                     requireView(),
-                    R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+                    R.string.permission_denied_explanation, Snackbar.LENGTH_LONG
                 )
                     .show()
             }
@@ -206,7 +218,7 @@ class SaveReminderFragment : BaseFragment() {
         } else {
             Snackbar.make(
                 requireView(),
-                R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+                R.string.permission_denied_explanation, Snackbar.LENGTH_LONG
             )
                 .show()
         }

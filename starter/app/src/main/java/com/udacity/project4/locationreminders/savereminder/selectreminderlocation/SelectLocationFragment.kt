@@ -178,7 +178,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             if (!areLocationPermissionsGranted(grantResults)) {
                 Snackbar.make(
                     requireView(),
-                    R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+                    R.string.permission_denied_explanation, Snackbar.LENGTH_LONG
                 )
                     .show()
             } else {
@@ -216,7 +216,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     } else {
                         Snackbar.make(
                             requireView(),
-                            R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                            R.string.location_required_error, Snackbar.LENGTH_LONG
                         ).setAction(R.string.location_settings) {
                             startActivity(Intent().apply {
                                 action = Settings.ACTION_LOCATION_SOURCE_SETTINGS
